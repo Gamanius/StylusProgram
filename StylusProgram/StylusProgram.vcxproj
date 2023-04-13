@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{dc1ef9ec-fe40-4568-98fd-3eefe0fb0c50}</ProjectGuid>
+    <RootNamespace>StylusProgram</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
+    <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
+    <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
+    <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
+    <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d2d1.lib;dwrite.lib;libmupdf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d2d1.lib;dwrite.lib;libmupdf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d2d1.lib;dwrite.lib;libmupdf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <Optimization>MaxSpeed</Optimization>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d2d1.lib;dwrite.lib;libmupdf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
+      <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <PreBuildEvent>
+      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+    </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ext\include\mupdf\fitz.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\archive.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\band-writer.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\bidi.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\bitmap.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\buffer.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\color.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\compress.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\compressed-buffer.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\config.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\context.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\crypt.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\device.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\display-list.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\document.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\export.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\filter.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\font.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\geometry.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\getopt.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\glyph-cache.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\glyph.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\hash.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\image.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\link.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\log.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\outline.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\output-svg.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\output.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\path.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\pixmap.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\pool.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\separation.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\shade.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\store.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\story-writer.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\story.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\stream.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\string-util.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\structured-text.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\system.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\text.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\track-usage.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\transition.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\tree.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\types.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\util.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\version.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\write-pixmap.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\writer.h" />
+    <ClInclude Include="ext\include\mupdf\fitz\xml.h" />
+    <ClInclude Include="ext\include\mupdf\helpers\mu-office-lib.h" />
+    <ClInclude Include="ext\include\mupdf\helpers\mu-threads.h" />
+    <ClInclude Include="ext\include\mupdf\helpers\pkcs7-openssl.h" />
+    <ClInclude Include="ext\include\mupdf\memento.h" />
+    <ClInclude Include="ext\include\mupdf\pdf.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\annot.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\clean.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\cmap.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\crypt.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\document.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\event.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\font.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\form.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\interpret.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\javascript.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\name-table.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\object.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\page.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\parse.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\resource.h" />
+    <ClInclude Include="ext\include\mupdf\pdf\xref.h" />
+    <ClInclude Include="ext\include\mupdf\ucdn.h" />
+    <ClInclude Include="ext\visvalingam_simplify\geo_types.h" />
+    <ClInclude Include="ext\visvalingam_simplify\heap.hpp" />
+    <ClInclude Include="ext\visvalingam_simplify\visvalingam_algorithm.h" />
+    <ClInclude Include="src\helper\util\FileHandler.h" />
+    <ClInclude Include="src\helper\include.h" />
+    <ClInclude Include="src\helper\util\Logger.h" />
+    <ClInclude Include="src\helper\pdf\PDFHandler.h" />
+    <ClInclude Include="src\helper\render\RenderHandler.h" />
+    <ClInclude Include="src\helper\util\Util.h" />
+    <ClInclude Include="src\helper\window\WindowHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ext\visvalingam_simplify\geo_types.cpp" />
+    <ClCompile Include="ext\visvalingam_simplify\visvalingam_algorithm.cpp" />
+    <ClCompile Include="src\helper\render\Direct2D.cpp" />
+    <ClCompile Include="src\helper\util\FileHandler.cpp" />
+    <ClCompile Include="src\helper\render\PDFBuilder.cpp" />
+    <ClCompile Include="src\helper\window\TouchHandler.cpp" />
+    <ClCompile Include="src\helper\util\Logger.cpp" />
+    <ClCompile Include="src\helper\pdf\mupdf.cpp" />
+    <ClCompile Include="src\helper\pdf\pdf.cpp" />
+    <ClCompile Include="src\helper\render\StrokeBuilder.cpp" />
+    <ClCompile Include="src\helper\window\Window.cpp" />
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
