@@ -9,8 +9,9 @@ WindowHandler::TouchHandler* touchHandler = nullptr;
 PDFHandler::PDF pdf;
 RenderHandler::PDFBuilder* pdfbuilder = nullptr;
 
-
 ID2D1Bitmap* bitmap;
+unsigned long long lastScrollTime = 0;
+bool bitmapUpdated = false;
 
 void PenDown(WindowHandler::POINTER_INFO state) {
 	if (state.type == WindowHandler::TOUCH)
@@ -39,13 +40,16 @@ void PointerUp(WindowHandler::POINTER_INFO state) {
 	if (state.type == WindowHandler::TOUCH) {
 		touchHandler->stopTouchGestureOfFinger(state);
 
-		pdfbuilder->renderBitmap();
-
-		pdfbuilder->render();
+		if (pdfbuilder == nullptr)
+			return;
+		
+		context->render();
 	}
 }
 
 void PointerScroll(SHORT delta, bool hwehl, Point2D<int> p) {
+	lastScrollTime = TimeSince1970();
+	bitmapUpdated = false;
 	if (builder->isStrokeInProgress())
 		return;
 	if (hwehl)
@@ -63,27 +67,35 @@ void PointerScroll(SHORT delta, bool hwehl, Point2D<int> p) {
 			
 		}
 	}
+
+	pdfbuilder->calculateOutOfBoundsPDF();
+	pdfbuilder->createPreviewBitmaps();
 	context->render();
 	//Logger::add(context->getDisplayViewport());
 }
+
 
 void WindowRepaint(ID2D1HwndRenderTarget* const h) {
 	context->clearCanvas();
 	if (pdfbuilder != nullptr ) {
 		pdfbuilder->calculateOutOfBoundsPDF(); 
-		if (!touchHandler->isZoomGestureInProgress()) {
-			pdfbuilder->renderBitmap();
+		pdfbuilder->renderpreview(); 
+		if (!touchHandler->isGestureInProgress()) {
+			auto time = TimeSince1970();
+			pdfbuilder->renderBitmap(); 
+			Logger::add("Rendered pdf to bitmap in " + std::to_string(TimeSince1970() - time));
+			Logger::print();
+			pdfbuilder->render();
 		}
 	//	if (pdfbuilder->isInvalid())
-		pdfbuilder->render();
 	}
 	builder->renderAllStrokes();
 }
 
 bool init(HINSTANCE& hInstance) {
-	//AllocConsole();
-	//FILE* pCout;
-	//freopen_s(&pCout, "CONOUT$", "w", stdout);
+	AllocConsole();
+	FILE* pCout;
+	freopen_s(&pCout, "CONOUT$", "w", stdout);
 
 	Logger::init(Logger::PRINT_TARGET::STD_OUT);
 
@@ -112,6 +124,8 @@ bool init(HINSTANCE& hInstance) {
 	return true;
 }
 
+// put this command into the pre built event thingy and then everything should programagically work :P
+// msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nCmdShow) {
 	HeapSetInformation(NULL, HeapEnableTerminationOnCorruption, NULL, 0);
 	auto s = TimeSince1970();
@@ -127,6 +141,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		pdfbuilder = new RenderHandler::PDFBuilder(context, &pdf);
 	}
 	
+	// main loop
 	context->render();
 	s = TimeSince1970();
 	while (!_mainWindow->getCloseRequest()) {
@@ -138,6 +153,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		}
 	}
 
+	// clean up
 	delete _mainWindow;
 	delete builder;
 	delete touchHandler;

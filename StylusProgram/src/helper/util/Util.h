@@ -205,6 +205,17 @@ struct Rect2D {
 							upperleft.y + height > other.upperleft.y);
 	}
 
+
+	// calculate the intersection of two rectangles
+	Rect2D<T> intersection(const Rect2D<T>& other) const {
+		Rect2D<T> result;
+		result.upperleft.x = max(upperleft.x, other.upperleft.x);
+		result.upperleft.y = max(upperleft.y, other.upperleft.y);
+		result.width = min(upperleft.x + width, other.upperleft.x + other.width) - result.upperleft.x;
+		result.height = min(upperleft.y + height, other.upperleft.y + other.height) - result.upperleft.y;
+		return result;
+	}
+
 	RECT toNormalizedRect() const {
 		RECT r;
 		r.left = 0;

@@ -89,7 +89,7 @@ namespace WindowHandler {
 		std::wstring getSaveFileDialogBox(const wchar_t* filter);
 
 
-		Rect2D<long> getClientSize() const;
+		Rect2D<unsigned int> getClientSize() const;
 
 		template <typename T>
 		Point2D<T> PxToDp(Point2D<T> p) const {
@@ -105,6 +105,8 @@ namespace WindowHandler {
 
 	class TouchHandler {
 		Point2D<double> m_initialOffset = { 0, 0 };
+		D2D1::Matrix3x2F m_initialScaleMatrix;
+		D2D1::Matrix3x2F m_initialScaleMatrixInv;
 		float m_initialScale = 1;
 		RenderHandler::Direct2DContext* m_renderContext;
 

@@ -74,21 +74,25 @@
     <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
     <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
     <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
     <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
     <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
     <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
     <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(HOMEDRIVE)\tempVS\$(ProjectName)\</OutDir>
     <IntDir>$(HOMEDRIVE)\tempVS\temp\$(ProjectName)\</IntDir>
     <TargetName>$(PlatformName)$(Configuration)$(ProjectName)</TargetName>
+    <CustomBuildBeforeTargets>Build</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,7 +111,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -125,6 +130,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,7 +142,8 @@
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -160,7 +167,8 @@
       <AdditionalLibraryDirectories>$(SolutionDir)mupdf\platform\win32\$(PlatformName)\$(ConfigurationName)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>
@@ -179,6 +187,7 @@
       <AdditionalIncludeDirectories>ext/include;src/helper;ext;$(SolutionDir)mupdf/include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>MaxSpeed</Optimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -190,7 +199,8 @@
       <AdditionalOptions>/IGNORE:4099 %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>msbuild.exe $(SolutionDir)mupdf\platform\win32\mupdf.sln -p:Configuration=$(ConfigurationName);Platform=$(PlatformName)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <CustomBuildStep>
       <Command>

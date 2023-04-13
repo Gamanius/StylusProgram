@@ -136,6 +136,7 @@ LRESULT WindowHandler::Window::parseWindowMessages(HWND hWnd, UINT uMsg, WPARAM 
 		return 0;
 	}
 	}
+
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
@@ -271,6 +272,7 @@ std::wstring WindowHandler::Window::getOpenFileDialogBox(const wchar_t* filter) 
 	ofn.lpstrFilter = filter; // set the file filter
 	ofn.lpstrFile = szFile; // set the file name buffer
 	ofn.nMaxFile = MAX_PATH; // set the maximum file name length
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY; // set the flags
 
 	// Open the file dialog
 	if (GetOpenFileName(&ofn) == TRUE) {
@@ -285,8 +287,8 @@ std::wstring WindowHandler::Window::getSaveFileDialogBox(const wchar_t* filter) 
 	return std::wstring();
 }
 
-Rect2D<long> WindowHandler::Window::getClientSize() const {
+Rect2D<unsigned int> WindowHandler::Window::getClientSize() const {
 	RECT rect;
 	GetClientRect(m_hwnd, &rect);
-	return Rect2D<long>(rect);
+	return Rect2D<unsigned int>(rect);
 }

@@ -86,7 +86,7 @@ void RenderHandler::Direct2DContext::render() {
 	// always render debug info at the end
 	
 	m_hwndRendertarget->SetTransform(D2D1::Matrix3x2F::Identity());
-		
+
 	if (m_renderDebugInfo)
 		renderText();
 
@@ -117,6 +117,7 @@ void RenderHandler::Direct2DContext::resize(Rect2D<UINT> r) {
 	d.height = r.height;
 	d.width = r.width;
 	m_hwndRendertarget->Resize(d);
+	m_displayViewSize = r;
 }
 
 void RenderHandler::Direct2DContext::clearCanvas() {
@@ -170,6 +171,10 @@ void RenderHandler::Direct2DContext::setMatrixTranslationOffset(Point2D<float> m
 	m_transformationMatrix = D2D1::Matrix3x2F::Translation(m);
 }
 
+void RenderHandler::Direct2DContext::setMatrixTranslationOffset(const D2D1::Matrix3x2F& mat) {
+	m_transformationMatrix = mat;
+}
+
 void RenderHandler::Direct2DContext::addMatrixTranslationOffset(Point2D<float> m) {
 	m_matrixTranslationOffset += m;
 
@@ -182,6 +187,12 @@ void RenderHandler::Direct2DContext::setMatrixScaleOffset(float f, Point2D<float
 
 	// calc the new scale matrix
 	m_scaleMatrix = D2D1::Matrix3x2F::Scale({ f, f }, center);
+}
+
+void RenderHandler::Direct2DContext::setMatrixScaleOffset(const D2D1::Matrix3x2F& mat) {
+	m_scaleMatrix = mat;
+	
+	m_matrixScaleOffset = std::sqrt(mat._11 * mat._11 + mat._12 * mat._12);
 }
 
 void RenderHandler::Direct2DContext::addMatrixScaleOffset(float f, Point2D<float> center) {
@@ -225,7 +236,7 @@ float RenderHandler::Direct2DContext::getDpi() const {
 	return GetDpiForWindow(m_hwndRendertarget->GetHwnd());
 }
 
-Rect2D<long> RenderHandler::Direct2DContext::getDisplayViewport() const {
+Rect2D<unsigned int> RenderHandler::Direct2DContext::getDisplayViewport() const {
 	return m_displayViewSize;
 }
 
@@ -338,8 +349,5 @@ RenderHandler::Bitmap& RenderHandler::Bitmap::operator=(Bitmap&& f) {
 }
 
 RenderHandler::Bitmap::~Bitmap() {
-	if (m_bitmap == nullptr)
-		return;
-
-	m_bitmap->Release();
+	SafeRelease(&m_bitmap);
 }

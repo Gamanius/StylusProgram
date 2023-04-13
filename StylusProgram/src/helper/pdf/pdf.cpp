@@ -1,5 +1,6 @@
 #include "PDFHandler.h"
 #include "mupdf/pdf.h"
+#include "util/Logger.h"
 
 PDFHandler::PDF::PDF(MUPDF* context, fz_document* doc) {
 	m_doc = doc;
@@ -50,20 +51,16 @@ PDFHandler::PDF::~PDF() {
 	fz_drop_document(m_pdfcontext->ctx, m_doc);
 }
 
-RenderHandler::Bitmap PDFHandler::PDF::createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> rec, bool fit, float dpi) {
+RenderHandler::Bitmap PDFHandler::PDF::createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> rec, float dpi) {
 	// TODO error handling 
 	auto& ctx = m_pdfcontext->ctx;
 
 	auto docpage = fz_load_page(ctx, m_doc, page);
 	
-
 	auto ctm = fz_identity;
-		auto size = getPageSize(page, 72);
-		//ctm = fz_scale((rec.width / size.width), (rec.height / size.height));
-		//ctm = fz_scale((dpi / 72.0f), (dpi / 72.0f));
-		ctm = fz_scale((rec.width / size.width) * (dpi / 72.0f), (rec.height / size.height) * (dpi / 72.0f));
+	auto size = getPageSize(page, 72);
+	ctm = fz_scale((rec.width / size.width) * (dpi / 72.0f), (rec.height / size.height) * (dpi / 72.0f));
 	
-
 	auto fbox = fz_make_rect(0, 0, size.width, size.height);
 	auto bbox = fz_round_rect(fz_transform_rect(fbox, ctm));
 	auto pix = fz_new_pixmap_with_bbox(ctx, fz_device_rgb(ctx), bbox, nullptr, 1);
@@ -73,6 +70,33 @@ RenderHandler::Bitmap PDFHandler::PDF::createBitmapFromPage(RenderHandler::Direc
 	pdf_run_page_with_usage(ctx, (pdf_page*)docpage, dev, ctm, "View", nullptr); 
 	
 	RenderHandler::Bitmap butmap(context, pix->samples, {{0, 0}, (unsigned int)bbox.x1, (unsigned int)bbox.y1}, pix->stride, dpi);
+	
+	fz_drop_pixmap(ctx, pix);
+	fz_drop_page(ctx, docpage);
+	fz_drop_device(ctx, dev);
+
+	return std::move(butmap);
+}
+
+RenderHandler::Bitmap PDFHandler::PDF::createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> destination, Rect2D<float> source, float dpi) {
+	auto& ctx = m_pdfcontext->ctx;
+	// load page
+	auto docpage = fz_load_page(ctx, m_doc, page);
+
+	// create the matrix
+	auto scale = fz_identity;
+	scale = fz_scale((destination.width / source.width) * (dpi / 72.0f), (destination.height / source.height) * (dpi / 72.0f));
+	auto transform = fz_translate(-source.upperleft.x, -source.upperleft.y);
+
+	auto fbox = fz_make_rect(0, 0, source.width, source.height);
+	auto bbox = fz_round_rect(fz_transform_rect(fbox, scale));
+	auto pix = fz_new_pixmap_with_bbox(ctx, fz_device_rgb(ctx), bbox, nullptr, 1);
+	fz_clear_pixmap_with_value(ctx, pix, 0xff);
+	auto dev = fz_new_draw_device(ctx, fz_identity, pix);
+	pdf_run_page_with_usage(ctx, (pdf_page*)docpage, dev, fz_concat(transform, scale), "View", nullptr);
+
+
+	RenderHandler::Bitmap butmap(context, pix->samples, { {0, 0}, (unsigned int)bbox.x1, (unsigned int)bbox.y1 }, pix->stride, dpi);
 
 	fz_drop_pixmap(ctx, pix);
 	fz_drop_page(ctx, docpage);

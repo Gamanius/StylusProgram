@@ -29,6 +29,11 @@ void WindowHandler::TouchHandler::startTouchGesture(POINTER_INFO fingerPosition)
 		m_initialScale = m_renderContext->getMatrixScaleOffset();
 		m_secondFingerActive = true;
 
+		//m_initialScaleOffset = m_renderContext->scaleFromDisplayPixelsToViewPortPixels(m_renderContext->getMatrixScaleOffsetCenter() - (m_initialFirstFinger.pos - m_initialSecondFinger.pos));
+		m_initialScaleMatrix = m_renderContext->getScaleMatrix();
+		m_initialScaleMatrixInv = D2D1::Matrix3x2F(m_initialScaleMatrix);
+		m_initialScaleMatrixInv.Invert();
+
 		return;
 	}
 }
@@ -53,11 +58,17 @@ void WindowHandler::TouchHandler::updateTouchGesture(POINTER_INFO fingerPosition
 	double distance = (m_lastFirstFinger.pos - m_lastSecondFinger.pos).distance();
 	double initialDistance = (m_initialFirstFinger.pos - m_initialSecondFinger.pos).distance();
 	double scale = distance / initialDistance;
+	
 	// calculate the center
 	Point2D<double> center = (m_lastFirstFinger.pos + m_lastSecondFinger.pos) / 2.0f;
 	Point2D<double> initialCenter = (m_initialFirstFinger.pos + m_initialSecondFinger.pos) / 2.0f;
+
 	// set the matrix scale offset
-	m_renderContext->setMatrixScaleOffset(m_initialScale * scale, initialCenter);
+	auto mat = D2D1::Matrix3x2F::Scale({ (float)(scale), (float)(scale) }, m_initialScaleMatrixInv.TransformPoint(initialCenter));
+	//m_initialScaleMatrix = mat * m_initialScaleMatrix;
+
+	m_renderContext->setMatrixScaleOffset(mat * m_initialScaleMatrix);
+	//m_renderContext->setMatrixScaleOffset(m_initialScale * scale, initialCenter);
 	// calculate the new scaled points and the translation
 	Point2D<double> transformedInitialCenter = m_renderContext->scaleFromViewPortPixelsToDisplayPixels(initialCenter);
 	Point2D<double> transformedCenter = m_renderContext->scaleFromViewPortPixelsToDisplayPixels(center);

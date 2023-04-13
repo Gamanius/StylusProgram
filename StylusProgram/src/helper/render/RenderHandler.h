@@ -35,7 +35,7 @@ namespace RenderHandler {
 		Point2D<float> m_matrixTranslationOffset = { 0, 0 };
 		float m_matrixScaleOffset = 1;
 		Point2D<float> m_matrixScaleOffsetCenter = { 0, 0 };
-		Rect2D<long> m_displayViewSize;
+		Rect2D<unsigned int> m_displayViewSize;
 		D2D1::Matrix3x2F m_scaleMatrix = D2D1::Matrix3x2F::Identity();
 		D2D1::Matrix3x2F m_transformationMatrix = D2D1::Matrix3x2F::Identity();
 
@@ -70,8 +70,10 @@ namespace RenderHandler {
 		void setRenderDebugTextMaxSize(size_t size);
 
 		void setMatrixTranslationOffset(Point2D<float> m);
+		void setMatrixTranslationOffset(const D2D1::Matrix3x2F& mat);
 		void addMatrixTranslationOffset(Point2D<float> m);
 		void setMatrixScaleOffset(float f, Point2D<float> center);
+		void setMatrixScaleOffset(const D2D1::Matrix3x2F& mat);
 		void addMatrixScaleOffset(float f, Point2D<float> center);
 
 		void setCurrentViewPortMatrixActive();
@@ -84,7 +86,7 @@ namespace RenderHandler {
 
 		float getDpi() const;
 
-		Rect2D<long> getDisplayViewport() const;
+		Rect2D<unsigned int> getDisplayViewport() const;
 		Point2D<float> scaleFromViewPortPixelsToDisplayPixels(Point2D<float> f) const;
 		Rect2D<float> scaleFromViewPortPixelsToDisplayPixels(Rect2D<float> f) const;
 		Point2D<float> scaleFromDisplayPixelsToViewPortPixels(Point2D<float> f) const;
@@ -101,6 +103,7 @@ namespace RenderHandler {
 		ID2D1HwndRenderTarget* getRenderTarget() const;
 		D2D1::Matrix3x2F getScaleMatrix() const;
 		ID2D1SolidColorBrush* getDebugBrush() const;
+
 		friend WindowHandler::Window;
 		friend StrokeBuilder;
 	};
@@ -179,12 +182,21 @@ namespace RenderHandler {
 		struct CachedPDFBitmap {
 			float m_scale = 1;
 			Rect2D<float> m_positionandsize;
+			Rect2D<float> m_intersectionWithViewPort;
 			RenderHandler::Bitmap m_bitmap;
+
+			float m_previewscale = 0;
+			RenderHandler::Bitmap m_previewbitmap;
 		};
 		std::vector<CachedPDFBitmap*> m_bitmapbuffer;
 
 		size_t m_startpagerender = 0;
 		size_t m_endpagerender = 1;
+
+		size_t m_previewPages = 10;
+		float m_previewScale = 0.5;
+
+		size_t m_currentPage = 0;
 
 		bool m_invalid = true;
 	public:
@@ -194,12 +206,17 @@ namespace RenderHandler {
 
 		// will calculate the out of bounds pdf 
 		void calculateOutOfBoundsPDF(); 
+		// will render a lower resolution pdf onto a bitmap and save it in a buffer
+		void createPreviewBitmaps(float scale = 0.5);
 		// Will retrieve the current viewport and render the pdf onto a cached bitmap.
 		void renderBitmap();
 		// Will render a given page
-		void renderBitmap(size_t page);
+		void renderBitmap(size_t page, bool viewportintersection = true);
 		// Will render all visible pages
 		void render();
+		void renderpreview();
+
+		size_t getCurrentPage() const;
 
 		void invalidate();
 		bool isInvalid() const;

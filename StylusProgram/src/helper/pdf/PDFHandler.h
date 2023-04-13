@@ -26,7 +26,8 @@ namespace PDFHandler {
 		PDF& operator=(PDF&& p);
 		~PDF();
 
-		RenderHandler::Bitmap createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> rec, bool filltofit, float dpi = 72);
+		RenderHandler::Bitmap createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> rec, float dpi = 72);
+		RenderHandler::Bitmap createBitmapFromPage(RenderHandler::Direct2DContext* context, unsigned int page, Rect2D<float> destination, Rect2D<float> source, float dpi = 72);
 		Rect2D<float> getPageSize(unsigned int page, float dpi = 72);
 		size_t getNumberOfPages();
 	};
