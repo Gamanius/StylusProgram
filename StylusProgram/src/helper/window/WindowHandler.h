@@ -41,6 +41,150 @@ namespace WindowHandler {
 		MINIMIZED
 	};
 
+	enum VK {
+		LEFT_MB,
+		RIGHT_MB,
+		CANCEL,
+		MIDDLE_MB,
+		X1_MB,
+		X2_MB,
+		LEFT_SHIFT,
+		RIGHT_SHIFT,
+		LEFT_CONTROL,
+		RIGHT_CONTROL,
+		BACKSPACE,
+		TAB,
+		ENTER,
+		ALT,
+		PAUSE,
+		CAPSLOCK,
+		ESCAPE,
+		SPACE,
+		PAGE_UP,
+		PAGE_DOWN,
+		END,
+		HOME,
+		LEFTARROW,
+		UPARROW,
+		RIGHTARROW,
+		DOWNARROW,
+		SELECT,
+		PRINT,
+		EXECUTE,
+		PRINT_SCREEN,
+		INSERT,
+		DEL,
+		HELP,
+		KEY_0,
+		KEY_1,
+		KEY_2,
+		KEY_3,
+		KEY_4,
+		KEY_5,
+		KEY_6,
+		KEY_7,
+		KEY_8,
+		KEY_9,
+		A,
+		B,
+		C,
+		D,
+		E,
+		F,
+		G,
+		H,
+		I,
+		J,
+		K,
+		L,
+		M,
+		N,
+		O,
+		P,
+		Q,
+		R,
+		S,
+		T,
+		U,
+		V,
+		W,
+		X,
+		Y,
+		Z,
+		LEFT_WINDOWS,
+		RIGHT_WINDOWS,
+		APPLICATION,
+		SLEEP,
+		SCROLL_LOCK,
+		LEFT_MENU,
+		RIGHT_MENU,
+		VOLUME_MUTE,
+		VOLUME_DOWN,
+		VOLUME_UP,
+		MEDIA_NEXT,
+		MEDIA_LAST,
+		MEDIA_STOP,
+		MEDIA_PLAY_PAUSE,
+		OEM_1,
+		OEM_2,
+		OEM_3,
+		OEM_4,
+		OEM_5,
+		OEM_6,
+		OEM_7,
+		OEM_8,
+		OEM_102,
+		OEM_CLEAR,
+		OEM_PLUS,
+		OEM_COMMA,
+		OEM_MINUS,
+		OEM_PERIOD,
+		NUMPAD_0,
+		NUMPAD_1,
+		NUMPAD_2,
+		NUMPAD_3,
+		NUMPAD_4,
+		NUMPAD_5,
+		NUMPAD_6,
+		NUMPAD_7,
+		NUMPAD_8,
+		NUMPAD_9,
+		NUMPAD_MULTIPLY,
+		NUMPAD_ADD,
+		NUMPAD_SEPERATOR,
+		NUMPAD_SUBTRACT,
+		NUMPAD_COMMA,
+		NUMPAD_DIVIDE,
+		NUMPAD_LOCK,
+		F1,
+		F2,
+		F3,
+		F4,
+		F5,
+		F6,
+		F7,
+		F8,
+		F9,
+		F10,
+		F11,
+		F12,
+		F13,
+		F14,
+		F15,
+		F16,
+		F17,
+		F18,
+		F19,
+		F20,
+		F21,
+		F22,
+		F23,
+		F24,
+		PLAY,
+		ZOOM,
+		UNKWON
+	};
+
 	class Window {
 		HDC m_hdc;
 		HWND m_hwnd;
@@ -54,6 +198,9 @@ namespace WindowHandler {
 		void (*PointerScrollCallback)(SHORT, bool, Point2D<int>) = nullptr;
 
 		void (*WindowPaintCallback)() = nullptr;
+
+		void (*KeyDownCallback)(VK) = nullptr;
+		void (*KeyUpCallback)(VK) = nullptr;
 
 		/* TODO */
 		void (*WindowResizeCallback)(WindowHandler::WINDOW_STATE, Rect2D<int>);
@@ -76,12 +223,17 @@ namespace WindowHandler {
 		void forceDraw();
 
 		bool getCloseRequest();
+		void sendCloseRequest();
 
 		void setPointerDownCallback(void (*fun)(POINTER_INFO));
 		void setPointerUpdateCallback(void (*fun)(POINTER_INFO));
 		void setPointerUpCallback(void (*fun)(POINTER_INFO));
 
 		void setPointerScrollCallback(void (*fun)(SHORT, bool, Point2D<int>));
+
+		void setKeyDownCallback(void (*fun)(VK));
+		void setKeyUpCallback(void (*fun)(VK));
+
 
 		void setWindowPaintCallback(void (*fun)());
 

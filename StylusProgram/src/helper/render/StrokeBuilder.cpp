@@ -2,9 +2,40 @@
 #include "util/Logger.h"
 #include "visvalingam_simplify/visvalingam_algorithm.h"
 
-#undef min
-#undef max
 
+void RenderHandler::StrokeBuilder::renderAllStrokes() {
+	auto startAndEndpage = m_annotationHandler->m_pdfbuilder->getVisibleStartAndEndPage();
+	auto context = m_annotationHandler->getContext();
+	context->beginDraw();
+	context->setCurrentViewPortMatrixActive();
+	for (size_t i = std::get<0>(startAndEndpage); i < std::get<1>(startAndEndpage); i++) {
+		for (auto& ink : *(m_annotationHandler->m_inkstrokes[i])) {
+			context->getRenderTarget()->DrawGeometry(ink.m_bezierCurveGeometry, ink.m_strokeBrush, ink.m_strokeWidth, ink.m_strokeStyle);			
+		}
+	}
+
+	context->endDraw();
+}
+
+void RenderHandler::StrokeBuilder::renderDynamicLines() {
+	if (m_dynamicLines.size() == 0)
+		return;
+	auto context = m_annotationHandler->getContext();
+	context->beginDraw();
+	context->setCurrentViewPortMatrixActive();
+	auto hwndtarget = context->m_hwndRendertarget;
+	for (auto& l : m_dynamicLines) {
+		hwndtarget->DrawLine(std::get<0>(l), std::get<1>(l), m_annotationHandler->m_currentInkBrush, m_annotationHandler->m_currentStrokeWidht);
+	}
+	m_dynamicLines.clear();
+	context->endDraw();
+}
+
+void RenderHandler::StrokeBuilder::addDynamicLine(Point2D<double> p1, Point2D<double> p2) {
+	m_dynamicLines.push_back(std::make_tuple(p1, p2)); 
+}
+
+/*
 void calcBoundingBox(Rect2D<double>& a, Point2D<double> p) {
 	if (a.upperleft.x > p.x) {
 		a.width += std::abs(p.x - a.upperleft.x);
@@ -30,7 +61,9 @@ RenderHandler::StrokeBuilder::Stroke::Stroke(Point2D<double> p) {
 
 RenderHandler::StrokeBuilder::Stroke::~Stroke() {
 	delete m_points;
-	SafeRelease(&m_bezierCurveGeometry);
+	//SafeRelease(&m_bezierCurveGeometry);
+	if (m_bezierCurveGeometry != nullptr)
+		Logger::add(m_bezierCurveGeometry->Release());
 	SafeRelease(&m_strokeBrush);
 	SafeRelease(&m_strokeStyle);
 }
@@ -84,7 +117,7 @@ void RenderHandler::StrokeBuilder::Stroke::setStrokeStyle(ID2D1StrokeStyle* styl
 }
 
 void RenderHandler::StrokeBuilder::startStroke(Point2D<double> p, UINT32 id) {
-	Stroke s(p - m_renderContext->getMatrixTranslationOffset());
+	Stroke s(p);
 	s.setStrokeBrush(m_currentInkBrush); 
 	s.setStrokeStyle(m_currentLineStyle);
 
@@ -99,7 +132,7 @@ void RenderHandler::StrokeBuilder::addSafeStroke(Point2D<double> p, UINT32 id) {
 
 void RenderHandler::StrokeBuilder::addStroke(Point2D<double> p, UINT32 id) {
 	auto& s = m_dynamicStroke.at(id);
-	s.m_points->push_back(p - m_renderContext->getMatrixTranslationOffset());
+	s.m_points->push_back(p);
 
 	//update the bounding box
 	calcBoundingBox(s.m_boundingBox, p);
@@ -251,10 +284,10 @@ void RenderHandler::StrokeBuilder::endStroke(Point2D<double> p, UINT32 id) {
 	if (m_dynamicStroke.find(id) == m_dynamicStroke.end())
 		return;
 	auto& s = m_dynamicStroke.at(id);
-	s.m_points->push_back(p - m_renderContext->getMatrixTranslationOffset());
+	s.m_points->push_back(p);
 
 	if (s.m_points->size() <= 2) {
-		s.m_points->push_back(p - m_renderContext->getMatrixTranslationOffset());
+		s.m_points->push_back(p);
 	}
 
 	// simplify points
@@ -268,7 +301,7 @@ void RenderHandler::StrokeBuilder::endStroke(Point2D<double> p, UINT32 id) {
 	std::vector<Point2D<double>> bi(s.m_points->size() - 1);
 	calcBezierPoints(*s.m_points, ai, bi);
 	s.m_bezierCurveGeometry = createBezierPathGeometry(m_renderContext->m_pD2DFactory, *s.m_points, ai, bi);
-	
+
 	m_longTimeStroke.push_back(std::move(s));
 	m_dynamicStroke.erase(id);
 
@@ -276,30 +309,39 @@ void RenderHandler::StrokeBuilder::endStroke(Point2D<double> p, UINT32 id) {
 		renderAllStrokes();
 }
 
-Point2D<double> RenderHandler::StrokeBuilder::getLastStroke(UINT32 id) {
-	if (m_dynamicStroke.find(id) == m_dynamicStroke.end())
-		return { 0, 0 };
-	auto& s = m_dynamicStroke.at(id);
-	return s.m_points->at(s.m_points->size() - 1);
+void RenderHandler::StrokeBuilder::eraser(Point2D<double> p) {
+	bool erasedLine = false;
+
+	for (auto it = m_longTimeStroke.begin(); it != m_longTimeStroke.end();) { 
+		bool isLineRemoved = false;
+		if (it->m_boundingBox.intersects(p)) { 
+			for (size_t i = 1; i < it->m_points->size(); i++) { 
+				if (pointToLineDistance(it->m_points->at(i), it->m_points->at(i - 1), p) < m_renderContext->DptoPx(m_currentEraserWidht)) {
+					//std::destroy_at(&m_longTimeStroke[i]);
+					it = m_longTimeStroke.erase(it);
+					erasedLine = true;
+					isLineRemoved = true;
+					break;
+				}
+			}
+		}
+		if (!isLineRemoved)
+			it++;
+	}
+
+	if (erasedLine) {
+		m_renderContext->render();
+	}
 }
+
 
 void RenderHandler::StrokeBuilder::renderAllStrokes() {
 	if (m_renderContext == nullptr)
 		return;
 	m_renderContext->beginDraw();
 	m_renderContext->setCurrentViewPortMatrixActive();
-	for (size_t i = 0; i < m_longTimeStroke.size(); i++) {
-		auto& stroke = m_longTimeStroke[i];
+	for (auto& stroke : m_longTimeStroke) {
 		m_renderContext->m_hwndRendertarget->DrawGeometry(stroke.m_bezierCurveGeometry, stroke.m_strokeBrush, m_currentStrokeWidht, stroke.m_strokeStyle);
-		//for (size_t i = 0; i < stroke.m_points->size() - 2; i++) {
-		//	m_renderContext->m_hwndRendertarget->DrawLine(stroke.m_points->at(i), stroke.m_points->at(i+1), stroke.m_strokeBrush, 3, stroke.m_strokeStyle);
-		//}
-		//D2D1_RECT_F rect;
-		//rect.left = m_longTimeStroke.at(i).m_boundingBox.upperleft.x;
-		//rect.right = m_longTimeStroke.at(i).m_boundingBox.upperleft.x + m_longTimeStroke.at(i).m_boundingBox.width;
-		//rect.bottom = m_longTimeStroke.at(i).m_boundingBox.height + m_longTimeStroke.at(i).m_boundingBox.upperleft.y;
-		//rect.top = m_longTimeStroke.at(i).m_boundingBox.upperleft.y;
-		//target->DrawRectangle(rect, m_renderContext->m_debugBrush);
 	}
 	m_renderContext->endDraw();
 }
@@ -345,7 +387,13 @@ bool RenderHandler::StrokeBuilder::isStrokeInProgress() const {
 	return m_dynamicStroke.size() != 0;
 }
 
+size_t RenderHandler::StrokeBuilder::getAmountOfStrokes() const {
+	return m_longTimeStroke.size();
+}
+
 RenderHandler::StrokeBuilder::~StrokeBuilder() {
 	SafeRelease(&m_currentInkBrush);
 	SafeRelease(&m_currentLineStyle);
+	Logger::add("dek2");
 } 
+*/

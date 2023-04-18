@@ -4,6 +4,7 @@
 #include <string>
 #include <d2d1.h>
 #include <dwrite.h>
+#include <list>
 
 #include "util/Util.h"
 #include "window/WindowHandler.h"
@@ -14,6 +15,7 @@
 
 namespace PDFHandler {
 	struct PDF;
+	class AnnotationHandler;
 }
 
 namespace WindowHandler {
@@ -84,8 +86,18 @@ namespace RenderHandler {
 		Point2D<float> getMatrixTranslationOffset() const;
 		float getMatrixScaleOffset() const;
 
+		// returns the dpi of the display
 		float getDpi() const;
+		// Converts pixels to DIPs (device independent pixels)
+		float PxToDp(float px) const {
+			return px / (getDpi() / 96.0f);
+		}
+		// Converts DIPs (device independent pixels) to pixels
+		float DptoPx(float dip) const {
+			return dip * (getDpi() / 96.0f);
+		}
 
+		// returns the size of the display in pixels
 		Rect2D<unsigned int> getDisplayViewport() const;
 		Point2D<float> scaleFromViewPortPixelsToDisplayPixels(Point2D<float> f) const;
 		Rect2D<float> scaleFromViewPortPixelsToDisplayPixels(Rect2D<float> f) const;
@@ -123,6 +135,15 @@ namespace RenderHandler {
 	};
 
 	class StrokeBuilder {
+		PDFHandler::AnnotationHandler* m_annotationHandler = nullptr;
+		std::vector<std::tuple<Point2D<double>, Point2D<double>>> m_dynamicLines;
+	public:
+		StrokeBuilder() = default;
+		void renderAllStrokes();
+		void renderDynamicLines();
+		void addDynamicLine(Point2D<double> p1, Point2D<double> p2);
+
+		/*
 		struct Stroke {
 			// the points that define a stroke
 			std::vector<Point2D<double>>* m_points;
@@ -135,8 +156,8 @@ namespace RenderHandler {
 
 			~Stroke();
 
-			Stroke(const Stroke& s) = delete;
-			Stroke& operator=(const Stroke&) = delete; // dont copy that array...or mess with reference count
+			Stroke(const Stroke& s) = delete; // dont copy that array...or mess with reference count
+			Stroke& operator=(const Stroke&) = delete; 
 
 			Stroke& operator=(Stroke&& s);
 			Stroke(Stroke&& s);
@@ -148,12 +169,13 @@ namespace RenderHandler {
 		Direct2DContext* m_renderContext;
 		std::map<UINT32, Stroke> m_dynamicStroke;
 		std::vector<std::tuple<Point2D<double>, Point2D<double>>> m_dynamicLines;
-		std::vector<Stroke> m_longTimeStroke;
+		std::list<Stroke> m_longTimeStroke;
 
 		//Render Stuff
 		ID2D1SolidColorBrush* m_currentInkBrush = nullptr;
 		ID2D1StrokeStyle* m_currentLineStyle = nullptr;
-		float m_currentStrokeWidht = 0.5;
+		float m_currentStrokeWidht = 1;
+		float m_currentEraserWidht = 10;
 
 	public:
 		void startStroke(Point2D<double> p, UINT32 id);
@@ -161,7 +183,7 @@ namespace RenderHandler {
 		void addStroke(Point2D<double> p, UINT32 id);
 		void endStroke(Point2D<double> p, UINT32 id);
 
-		Point2D<double> getLastStroke(UINT32 id);
+		void eraser(Point2D<double> p);
 
 		void renderAllStrokes();
 
@@ -171,7 +193,10 @@ namespace RenderHandler {
 
 		bool isStrokeInProgress() const;
 
-		~StrokeBuilder();
+		size_t getAmountOfStrokes() const;
+
+		~StrokeBuilder();*/
+		friend PDFHandler::AnnotationHandler;
 	};
 
 	class PDFBuilder {
@@ -214,12 +239,18 @@ namespace RenderHandler {
 		void renderBitmap(size_t page, bool viewportintersection = true);
 		// Will render all visible pages
 		void render();
+		// Will render a low res version of the pages definded by the scale given into the createPreviewBitmaps method
 		void renderpreview();
 
 		size_t getCurrentPage() const;
+		Rect2D<float> getSizeAndPositionOfPage(size_t page) const;
 
 		void invalidate();
 		bool isInvalid() const;
+
+		std::tuple<size_t, size_t> getVisibleStartAndEndPage() const;
+
+		friend PDFHandler::AnnotationHandler;
 	};
 
 	class UIBuilder {

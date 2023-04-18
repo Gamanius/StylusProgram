@@ -295,6 +295,8 @@
   <ItemGroup>
     <ClCompile Include="ext\visvalingam_simplify\geo_types.cpp" />
     <ClCompile Include="ext\visvalingam_simplify\visvalingam_algorithm.cpp" />
+    <ClCompile Include="src\helper\pdf\AnnotationHandler.cpp" />
+    <ClCompile Include="src\helper\pdf\PdfPage.cpp" />
     <ClCompile Include="src\helper\render\Direct2D.cpp" />
     <ClCompile Include="src\helper\util\FileHandler.cpp" />
     <ClCompile Include="src\helper\render\PDFBuilder.cpp" />

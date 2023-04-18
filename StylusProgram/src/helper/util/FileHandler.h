@@ -20,6 +20,8 @@ namespace FileHandler {
 	};
 
 	File openFile(const std::wstring& s);
+	void saveFile(const std::wstring& s, const File& f);
+	void saveFile(const std::wstring& s, byte* data, size_t size);
 }
 
 #endif // !FILE_HANDLER_H

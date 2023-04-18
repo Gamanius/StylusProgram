@@ -61,3 +61,28 @@ FileHandler::File FileHandler::openFile(const std::wstring& s) {
 	}
 	return std::move(file);
 }
+
+void FileHandler::saveFile(const std::wstring& s, const File& f) {
+	// open file using CreateFileW from the win32 api
+	HANDLE hFile = CreateFileW(s.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		Logger::add(L"Failed to create file: " + s, LOGGER_TYPE::ERROR);
+		return;
+	}
+
+
+	DWORD bytesWritten;
+	if (!WriteFile(hFile, (void*)f.data, f.size, &bytesWritten, NULL)) {
+		Logger::add(L"Failed to write to file: " + s, LOGGER_TYPE::ERROR);
+	}
+
+	CloseHandle(hFile);
+}
+
+void FileHandler::saveFile(const std::wstring& s, byte* data, size_t size) {
+	File f;
+	f.data = data;
+	f.size = size;
+	saveFile(s, f);
+	f.data = nullptr;
+}

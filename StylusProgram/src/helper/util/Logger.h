@@ -15,6 +15,9 @@ enum LOGGER_TYPE {
 	ERROR
 };
 
+namespace RenderHandler {
+	class Direct2DContext;
+}
 
 // this class is widley inefficent in every way imaginable so only use in debug mode...plz 
 class Logger {

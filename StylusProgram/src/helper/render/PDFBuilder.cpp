@@ -178,10 +178,18 @@ size_t RenderHandler::PDFBuilder::getCurrentPage() const {
 	return size_t();
 }
 
+Rect2D<float> RenderHandler::PDFBuilder::getSizeAndPositionOfPage(size_t page) const {
+	return m_bitmapbuffer[page]->m_positionandsize;
+}
+
 void RenderHandler::PDFBuilder::invalidate() {
 	m_invalid = true;
 }
 
 bool RenderHandler::PDFBuilder::isInvalid() const {
 	return m_invalid;
+}
+
+std::tuple<size_t, size_t> RenderHandler::PDFBuilder::getVisibleStartAndEndPage() const {
+	return std::tuple<size_t, size_t>(m_startpagerender, m_endpagerender);
 }
