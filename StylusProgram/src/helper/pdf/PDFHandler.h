@@ -92,7 +92,7 @@ namespace PDFHandler {
 			Rect2D<float> m_boundingBox;
 
 			//pdf annot are supposed to be only of type PDF_ANNOT_INK
-			PdfStroke(fz_context* ctx, pdf_annot* annot);
+			PdfStroke(fz_context* ctx, pdf_annot* annot, Point2D<float> offset);
 
 			~PdfStroke();
 

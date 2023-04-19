@@ -59,6 +59,8 @@ FileHandler::File FileHandler::openFile(const std::wstring& s) {
 		file.~File();
 		return File();
 	}
+
+	CloseHandle(hFile);
 	return std::move(file);
 }
 

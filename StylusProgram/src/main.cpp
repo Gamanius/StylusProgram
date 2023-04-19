@@ -43,6 +43,8 @@ void SavePdf() {
 		return;
 
 	auto filepath = _mainWindow->getSaveFileDialogBox(L"PDF Files (*.pdf)\0*.pdf\0\0");
+	if (filepath.empty())
+		return;
 	std::filesystem::path p(filepath);
 	p.replace_extension(".pdf");
 	filepath = std::wstring(p.c_str());

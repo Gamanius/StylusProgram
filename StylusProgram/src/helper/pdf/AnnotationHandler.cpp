@@ -55,12 +55,13 @@ PDFHandler::AnnotationHandler::InkStroke::InkStroke(InkStroke&& s) {
 	s.m_boundingBox = { {0, 0}, 0, 0 };
 }
 
-PDFHandler::AnnotationHandler::PdfStroke::PdfStroke(fz_context* ctx, pdf_annot* annot) {
+PDFHandler::AnnotationHandler::PdfStroke::PdfStroke(fz_context* ctx, pdf_annot* annot, Point2D<float> offset) {
 	this->ctx = ctx;
 	pdf_keep_annot(ctx, annot);
 	m_annot = annot;
 
 	m_boundingBox = Rect2D<float>(pdf_bound_annot(ctx, m_annot));
+	m_boundingBox.upperleft += offset;
 
 	auto amountOfStrokes = pdf_annot_ink_list_count(ctx, annot);
 	if (amountOfStrokes > 1) {
@@ -70,7 +71,7 @@ PDFHandler::AnnotationHandler::PdfStroke::PdfStroke(fz_context* ctx, pdf_annot* 
 	auto strokeCount = pdf_annot_ink_list_stroke_count(ctx, annot, 0);
 	m_points = new std::vector<Point2D<float>>();
 	for (size_t k = 0; k < strokeCount; k++) {
-		m_points->push_back(pdf_annot_ink_list_stroke_vertex(ctx, annot, 0, k));
+		m_points->push_back(Point2D<float>(pdf_annot_ink_list_stroke_vertex(ctx, annot, 0, k)) + offset);
 	}
 
 	m_strokeWidth = pdf_annot_border_width(ctx, annot);
@@ -149,13 +150,15 @@ PDFHandler::AnnotationHandler::AnnotationHandler(PDFHandler::PDF* pdf, RenderHan
 		if (annot == nullptr)
 			m_pdfinkannotations.push_back(nullptr);
 		else*/
-			m_pdfinkannotations.push_back(new std::vector<PdfStroke>());
+		m_pdfinkannotations.push_back(new std::vector<PdfStroke>());
 		
+		auto offset = context->getSizeAndPositionOfPage(i).upperleft;
+
 		while (annot) {
 			// TODO support for other types of annotattions?
 			// for now just support ink annotations
 			if (pdf_annot_type(ctx, annot) == PDF_ANNOT_INK) {
-				m_pdfinkannotations[i]->push_back(std::move(PdfStroke(ctx, annot)));  
+				m_pdfinkannotations[i]->push_back(std::move(PdfStroke(ctx, annot, offset)));  
 			}
 			annot = pdf_next_annot(ctx, annot);
 		}
@@ -475,13 +478,24 @@ void PDFHandler::AnnotationHandler::eraser(Point2D<float> p) {
 	while (it2 != m_pdfinkannotations[page]->end()) {
 		bool isLineRemoved = false;
 		if (it2->m_boundingBox.intersects(p)) {
-			for (size_t i = 1; i < it2->m_points->size(); i++) {
-				if (pointToLineDistance(it2->m_points->at(i), it2->m_points->at(i - 1), p) < m_pdfbuilder->m_rendercontext->DptoPx(m_currentEraserWidht) + it2->m_strokeWidth) {
+			// edge case were m_points == 1
+			if (it2->m_points->size() == 1) {
+				if (it2->m_points->at(0).distance(p) < m_pdfbuilder->m_rendercontext->DptoPx(m_currentEraserWidht) + it2->m_strokeWidth) {
 					pdf_delete_annot(m_pdf->m_pdfcontext->getctx(), m_pdf->getPage(page), it2->m_annot);
 					it2 = m_pdfinkannotations[page]->erase(it2);
 					removedLine = true;
 					isLineRemoved = true;
-					break;
+				}
+			}
+			else {
+				for (size_t i = 1; i < it2->m_points->size(); i++) {
+					if (pointToLineDistance(it2->m_points->at(i), it2->m_points->at(i - 1), p) < m_pdfbuilder->m_rendercontext->DptoPx(m_currentEraserWidht) + it2->m_strokeWidth) {
+						pdf_delete_annot(m_pdf->m_pdfcontext->getctx(), m_pdf->getPage(page), it2->m_annot);
+						it2 = m_pdfinkannotations[page]->erase(it2);
+						removedLine = true;
+						isLineRemoved = true;
+						break;
+					}
 				}
 			}
 		}
@@ -520,8 +534,10 @@ void PDFHandler::AnnotationHandler::bakeAnnotations() {
 			pdf_set_annot_color(ctx, annot, 3, (float*)&color);
 			//update the annotation
 			pdf_update_annot(ctx, annot); 
+			// get the offset of the page
+			auto offset = m_pdfbuilder->getSizeAndPositionOfPage(i).upperleft;
 			// push the annotation into the pdfinkannotation buffer
-			m_pdfinkannotations[i]->push_back(std::move(PdfStroke(ctx, annot)));
+			m_pdfinkannotations[i]->push_back(std::move(PdfStroke(ctx, annot, offset)));
 			// and remove reference from here
 			pdf_drop_annot(ctx, annot);
 			++it;
